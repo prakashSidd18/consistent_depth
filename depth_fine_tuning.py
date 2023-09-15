@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.utils as vutils
 from typing import Dict
+import imageio
 
 from utils.helpers import SuppressedStdout
 from monodepth.depth_model_registry import get_depth_model
@@ -24,6 +25,8 @@ from loss.loss_params import LossParams
 from utils import image_io, visualization
 from utils.torch_helpers import to_device
 
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
+imageio.plugins.freeimage.download()
 
 class DepthFineTuningParams:
     """Options about finetune parameters.
@@ -191,6 +194,8 @@ class DepthFineTuner:
 
             depth = depth.detach().cpu().numpy().squeeze()
             inv_depth = 1.0 / depth
+
+            imageio.imwrite(depth_fmt.format(frame_id) + ".exr", inv_depth)
 
             image_io.save_raw_float32_image(
                 depth_fmt.format(frame_id) + ".raw", inv_depth)

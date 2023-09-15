@@ -122,6 +122,10 @@ class Flow:
             "%s/flow/flow_%06d_%06d.raw" % (self.path, i, j)
             for (i, j) in index_pairs
         ]
+        out_x_fns = [
+            "%s/flow_x/flow_%06d_%06d.raw" % (self.path, i, j)
+            for (i, j) in index_pairs
+        ]
 
         tmp = image_io.load_raw_float32_image(
             pjoin(self.path, "color_down", "frame_{:06d}.raw".format(0))
@@ -134,11 +138,12 @@ class Flow:
         args.im1 = list(frame1_fns)
         args.im2 = list(frame2_fns)
         args.out = list(out_fns)
+        args.outx = list(out_x_fns)
         args.size = size
         args.fp16 = False
         args.homography = 'KITTI' not in checkpoint
         args.rgb_max = 255.0
-        args.visualize = False
+        args.visualize = True
 
         optical_flow_flownet2_homography.process(args)
 

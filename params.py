@@ -19,7 +19,7 @@ class Video3dParamsParser:
 
     def initialize(self):
         self.parser.add_argument("--op",
-            choices=["all", "extract_frames"], default="all")
+            choices=["all", "depth_flow", "extract_frames"], default="depth_flow")
 
         self.parser.add_argument("--path", type=str,
             help="Path to all the input (except for the video) and output files "

@@ -79,12 +79,12 @@ class Video:
             ffprobe,
             self.video_file,
         )
-        cmd = ffprobe_cmd + " | grep pkt_pts_time"
+        cmd = ffprobe_cmd + " | findstr pkt_dts_time"
         print(cmd)
         res = os.popen(cmd).read()
         pts = []
         for line in res.splitlines():
-            pts.append(parse_line(line, "pkt_pts_time="))
+            pts.append(parse_line(line, "pkt_dts_time="))
         self.frame_count = len(pts)
         print("%d frames detected." % self.frame_count)
 

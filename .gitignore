@@ -2,8 +2,13 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# folders not to track
 data/
 checkpoints/
+results/
+third_party/
+
 # C extensions
 *.so
 

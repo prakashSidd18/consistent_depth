@@ -7,11 +7,15 @@ import cv2
 import numpy as np
 import os
 import torch
+import imageio
 
 from third_party.flownet2.models import FlowNet2
 from third_party.OpticalFlowToolkit.lib.flowlib import flow_to_image
 from utils.image_io import save_raw_float32_image
 
+
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
+imageio.plugins.freeimage.download()
 
 class FlowInfer(torch.utils.data.Dataset):
     def __init__(self, list_file, size=None, isRGB=True, start_pos=0):
@@ -65,7 +69,7 @@ class FlowInfer(torch.utils.data.Dataset):
 
 def detectAndDescribe(image):
     # detect and extract features from the image
-    descriptor = cv2.xfeatures2d.SURF_create()
+    descriptor = cv2.SIFT_create()
     (kps, features) = descriptor.detectAndCompute(image, None)
 
     # convert the keypoints from KeyPoint objects to NumPy
@@ -251,7 +255,7 @@ def process(args):
     Flownet.to(device)
     Flownet.eval()
 
-    for im1, im2, out in zip(args.im1, args.im2, args.out):
+    for im1, im2, out, outx in zip(args.im1, args.im2, args.out, args.outx):
         if os.path.isfile(out):
             continue
 
@@ -259,11 +263,16 @@ def process(args):
         flow = resize_flow(flow, args.size)
 
         os.makedirs(os.path.dirname(out), exist_ok=True)
+        os.makedirs(os.path.dirname(outx), exist_ok=True)
+        fname_u = outx.split('.')[0] + '_u.exr'
+        fname_v = outx.split('.')[0] + '_v.exr'
+        imageio.imwrite(fname_u, flow[:, :, 0].astype('float32'))
+        imageio.imwrite(fname_v, flow[:, :, 1].astype('float32'))
         save_raw_float32_image(out, flow)
 
         if args.visualize:
             vis = flow_to_image(flow)
-            cv2.imwrite(os.path.splitext(out)[0] + ".png", vis)
+            cv2.imwrite(os.path.splitext(outx)[0] + ".png", vis)
 
 
 if __name__ == "__main__":
