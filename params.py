@@ -56,7 +56,7 @@ class Video3dParamsParser:
             " dense_frame_range or consective that computes forward backward flow"
             " between consecutive frames.",
             choices=frame_sampling.SamplePairsMode.names(),
-            default=["hierarchical2"],
+            default=["consecutive"],
         )
         self.parser.add_argument(
             "--flow_checkpoint", choices=["FlowNet2", "FlowNet2-KITTI"],
